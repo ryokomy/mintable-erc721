@@ -3,8 +3,11 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract MintableERC721 is ERC721 {
+contract MintableERC721 is ERC721Enumerable {
     uint256 private _nextTokenId;
 
     constructor()
@@ -18,6 +21,18 @@ contract MintableERC721 is ERC721 {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
-        return "ipfs://QmUWE26XadeiPWhfQVCgrqYGWLoJrvfVibKhLBWHmSvSir/0";
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name":"Kappa #', 
+                        Strings.toString(tokenId), 
+                        '", "description":"NFT for Coinbase Smart Wallet Test", "image":"ipfs://QmQtANpLHGVtukJKFJTRsFBcA2MRoVYT2NXKE7gjnh22Gh/0.png"}'
+                    )
+                )
+            )
+        );
+
+        return string(abi.encodePacked('data:application/json;base64,', json));
     }
 }
